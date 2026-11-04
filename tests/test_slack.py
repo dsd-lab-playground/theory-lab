@@ -28,8 +28,13 @@ sys.modules["slack_sdk.socket_mode"].SocketModeClient = object
 sys.modules["slack_sdk.socket_mode.response"].SocketModeResponse = object
 sys.modules["slack_sdk.web"].WebClient = object
 os.environ["LAB_SLACK"] = str(KIT / "slack/lab-slack")
+# Never touch a live lab: every path the Slack modules derive from LAB_DIR lives in a throwaway sandbox
+# (2026-11-03: an earlier run of these tests left approved requests in a live lab's queue and blocked its sync).
+_SANDBOX = tempfile.mkdtemp(prefix="theory-lab-test-")
+os.environ["LAB_DIR"] = _SANDBOX
 listen = load("lab_slack_listen", KIT / "slack/lab-slack-listen")
 ls = listen.ls   # the listener's own copy of lab-slack, so both see the paths patched below
+assert str(ls.STATE).startswith(_SANDBOX), f"lab-slack state {ls.STATE} is not in the test sandbox"
 
 CONF = """
 workspace ws

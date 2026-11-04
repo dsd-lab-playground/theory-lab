@@ -21,7 +21,7 @@ import argparse, hashlib, json, os, re, shutil, subprocess, sys, time, urllib.pa
 from datetime import datetime
 from pathlib import Path
 
-LAB = Path("/srv/lab")
+LAB = Path(os.environ.get("LAB_DIR", "/srv/lab"))   # tests point this at a sandbox
 CONF = LAB / "slack.conf"
 STATE = LAB / "state" / "slack"
 OUTBOX = STATE / "outbox"
